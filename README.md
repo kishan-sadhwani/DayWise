@@ -1,4 +1,4 @@
-# Today — Minimal Daily Task Planner
+# DayWise — Minimal Daily Task Planner
 
 A lightweight, distraction-free daily planner designed for one purpose:
 
@@ -10,7 +10,7 @@ A lightweight, distraction-free daily planner designed for one purpose:
 
 Most productivity apps fail because they make you plan too much.
 
-Today removes that friction by focusing only on:
+DayWise removes that friction by focusing only on:
 - The current day
 - The next actionable task
 - Zero setup
