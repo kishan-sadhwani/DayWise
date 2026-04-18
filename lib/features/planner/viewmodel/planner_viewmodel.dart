@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../models/task.dart';
 import '../../../core/utils/hive_setup.dart';
+import '../../../core/services/notification_provider.dart';
 
 final plannerViewModelProvider = NotifierProvider<PlannerViewModel, List<Task>>(
   PlannerViewModel.new,
@@ -78,11 +79,15 @@ class PlannerViewModel extends Notifier<List<Task>> {
     );
 
     _box.put(task.id, task);
+    ref.read(notificationServiceProvider).scheduleNotification(task);
+    
     state = _loadTasksForToday();
   }
 
   void updateTask(Task updatedTask) {
     _box.put(updatedTask.id, updatedTask);
+    ref.read(notificationServiceProvider).scheduleNotification(updatedTask);
+    
     state = _loadTasksForToday();
   }
 
@@ -91,12 +96,16 @@ class PlannerViewModel extends Notifier<List<Task>> {
     if (task != null) {
       final updatedTask = task.copyWith(isCompleted: true);
       _box.put(id, updatedTask);
+      ref.read(notificationServiceProvider).cancelNotification(id);
+      
       state = _loadTasksForToday();
     }
   }
 
   void deleteTask(String id) {
     _box.delete(id);
+    ref.read(notificationServiceProvider).cancelNotification(id);
+    
     state = _loadTasksForToday();
   }
 }

@@ -4,6 +4,34 @@ All notable changes to this project are documented here.
 
 ---
 
+## 1.7.0 — Smart Notifications & Architecture
+
+### Added
+- Smart local notifications for timed tasks:
+  - Triggered 5 minutes before scheduled time
+  - Minimal, non-intrusive reminder format
+
+### Added
+- Notification service abstraction layer:
+  - Introduced `NotificationService` interface
+  - iOS-specific implementation using local notifications
+
+### Improved
+- Task lifecycle integration:
+  - Notifications scheduled on create/update
+  - Notifications cancelled on delete/complete
+
+### Architecture
+- Applied SOLID principles to notification system
+- Decoupled platform-specific logic from core business logic
+- Prepared for future Android support without breaking existing code
+
+### UX Impact
+- Transitions app from passive planner → active assistant
+- Maintains simplicity with zero user configuration
+
+---
+
 ## 1.6.3 — Current Time UX Improvement
 
 ### Improved

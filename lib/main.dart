@@ -3,9 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/theme.dart';
 import 'core/utils/hive_setup.dart';
 import 'features/planner/view/planner_screen.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'core/services/ios_notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
+  await IOSNotificationService().init();
   await HiveSetup.init();
   runApp(
     const ProviderScope(
