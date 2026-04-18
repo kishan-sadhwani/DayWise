@@ -4,6 +4,26 @@ All notable changes to this project are documented here.
 
 ---
 
+## 1.7.1 — Layout Polish & Sticky Context
+
+### Fixed
+- Reduced excessive bottom spacing in timeline:
+  - Removed unnecessary filler space
+  - Maintained only required padding for FAB overlap safety
+
+### Improved
+- Implemented sticky behavior for Past Tasks section:
+  - Scrolls normally initially
+  - Sticks below "Today" header when reaching top
+  - Provides persistent context without occupying permanent space
+
+### UX Impact
+- Improved visual balance and layout tightness
+- Eliminated “low quality stretched” feel at bottom
+- Enhanced usability by keeping past tasks accessible during scroll
+
+---
+
 ## 1.7.0 — Smart Notifications & Architecture
 
 ### Added

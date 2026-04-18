@@ -25,7 +25,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Task Planner',
+      title: 'DayWise',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       home: const PlannerScreen(),

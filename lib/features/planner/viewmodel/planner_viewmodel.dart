@@ -19,6 +19,8 @@ class PlannerViewModel extends Notifier<List<Task>> {
     return _loadTasksForToday();
   }
 
+  /// Scans local storage and automatically permanently deletes any task where internally
+  /// flagged chronologically before today, protecting minimal scope.
   void _cleanupOldTasks() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -110,6 +112,8 @@ class PlannerViewModel extends Notifier<List<Task>> {
   }
 }
 
+/// Determines the most critical immediate "Next Task" priority.
+/// Evaluates chronological timers first, then falls back strictly to untimed chronological limits.
 final nextTaskProvider = Provider.autoDispose<String?>((ref) {
   final tasks = ref.watch(plannerViewModelProvider);
   if (tasks.isEmpty) return null;

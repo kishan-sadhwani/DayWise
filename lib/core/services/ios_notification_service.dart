@@ -3,6 +3,8 @@ import 'package:timezone/timezone.dart' as tz;
 import '../../features/planner/models/task.dart';
 import 'notification_service.dart';
 
+/// iOS-focused concrete implementation mapping pure Dart triggers
+/// directly into Xcode's `UNUserNotificationCenter` payload structure.
 class IOSNotificationService implements NotificationService {
   final FlutterLocalNotificationsPlugin _plugin = FlutterLocalNotificationsPlugin();
 
@@ -21,6 +23,7 @@ class IOSNotificationService implements NotificationService {
 
   @override
   Future<void> scheduleNotification(Task task) async {
+    // Only schedule if the task has a specific time mapped and is still pending completion.
     if (task.time == null || task.isCompleted) return;
 
     final now = DateTime.now();
@@ -29,10 +32,11 @@ class IOSNotificationService implements NotificationService {
     final taskDate = DateTime(task.createdAt.year, task.createdAt.month, task.createdAt.day);
     final today = DateTime(now.year, now.month, now.day);
     
-    // Do not schedule if time passed or from a previous day
+    // Do not schedule if time passed or the task belongs to a legacy day.
     if (taskDate.isBefore(today)) return;
     if (scheduleTime.isBefore(now)) return;
 
+    // Hashes string UUID uniquely resolving safe integer ID bounds required by active plugin layer.
     final id = task.id.hashCode;
 
     await _plugin.zonedSchedule(

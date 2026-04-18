@@ -144,39 +144,13 @@ class _PlannerScreenState extends ConsumerState<PlannerScreen> {
                   controller: _scrollController,
                   slivers: [
                     if (pastTasks.isNotEmpty)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: SharedSpacing.md),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Past',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: brandTheme.textMuted,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                              const SizedBox(height: SharedSpacing.xs),
-                              SizedBox(
-                                height: 80, // Increased for taller compact cards
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: pastTasks.length,
-                                  itemBuilder: (context, index) {
-                                    final t = pastTasks[index];
-                                    return TaskCard(
-                                      task: t,
-                                      isCompact: true,
-                                      onTap: () => _showAddEditSheet(t),
-                                    );
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: SharedSpacing.md),
-                            ],
-                          ),
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _PastTasksHeaderDelegate(
+                          pastTasks: pastTasks,
+                          theme: theme,
+                          brandTheme: brandTheme,
+                          onTaskTap: _showAddEditSheet,
                         ),
                       ),
                       
@@ -271,6 +245,7 @@ class _PlannerScreenState extends ConsumerState<PlannerScreen> {
                                           ],
                                         ),
                                       ),
+                                      // Render the horizontal real-time tracker directly scaled over the 100px base constraints based on current runtime minutes
                                       if (isCurrentHour)
                                         Positioned(
                                           top: ((now.minute / 60) * 100.0) - 8, // Shift up half-height to center over the exact offset
@@ -354,5 +329,75 @@ class _PlannerScreenState extends ConsumerState<PlannerScreen> {
     if (hour < 12) return '$hour AM';
     if (hour == 12) return '12 PM';
     return '${hour - 12} PM';
+  }
+}
+
+/// SliverPersistentHeaderDelegate determining precise bounding calculations ensuring the 
+/// 'Past Tasks' strip sticks aggressively under top navigation until the view dynamically pulls it cleanly out.
+class _PastTasksHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final List<Task> pastTasks;
+  final ThemeData theme;
+  final BrandThemeExtension brandTheme;
+  final Function(Task) onTaskTap;
+
+  _PastTasksHeaderDelegate({
+    required this.pastTasks,
+    required this.theme,
+    required this.brandTheme,
+    required this.onTaskTap,
+  });
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: theme.scaffoldBackgroundColor, // Ensure opaque background when stuck
+      padding: const EdgeInsets.only(top: SharedSpacing.sm), // Breathing room when sticky
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: SharedSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Past',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: brandTheme.textMuted,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: SharedSpacing.xs),
+            SizedBox(
+              height: 80, // Taller compact cards layout sizing
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: pastTasks.length,
+                itemBuilder: (context, index) {
+                  final t = pastTasks[index];
+                  return TaskCard(
+                    task: t,
+                    isCompact: true,
+                    onTap: () => onTaskTap(t),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: SharedSpacing.sm), // Bottom padding bridging timeline
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => 140.0; // Secure calculation preventing render overflow
+
+  @override
+  double get minExtent => 140.0; // Secure calculation preventing render overflow
+
+  @override
+  bool shouldRebuild(covariant _PastTasksHeaderDelegate oldDelegate) {
+    return pastTasks != oldDelegate.pastTasks ||
+           theme != oldDelegate.theme ||
+           brandTheme != oldDelegate.brandTheme;
   }
 }
